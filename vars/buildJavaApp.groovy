@@ -19,15 +19,20 @@ def call(body) {
   /*triggers {
         bitbucketPush()
   }*/
+parameters {
+        choice(choices: 'US-EAST-1\nUS-WEST-2', description: 'What AWS region?', name: 'choiceExample')
+    }
 
 options {
-	buildDiscarder(logRotator(numToKeepStr:'3'))
+	disableConcurrentBuilds()
+	buildDiscarder(logRotator(numToKeepStr:'3', artifactNumToKeepStr: '3'))
 	timeout(time: 30, unit: 'MINUTES')
 }
   
   stages {
     stage('Pre Build') {
       steps {
+	deleteDir()
         echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
         echo 'Iniciando limpieza'
         sh 'gradle --console=plain clean -x check -x test'
